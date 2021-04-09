@@ -1,0 +1,22 @@
+name: BukkitPluginExchangeGoods
+version: ${project.version}
+main: org.ponking.bpeg.BukkitPluginExchangeGoods
+api-version: 1.15
+prefix: Exchange Goods
+load: STARTUP
+loadbefore: [ Load-Exchange-Goods ]
+authors: [ PONKING ]
+description: Bukkit Plugin Exchange Goods
+commands:
+  exGoods:
+    description: 给予玩家方块
+#    usage: "使用: '/exGoods 方块名称 数量 玩家名称' 给予玩家方块"
+  rml:
+    description: 记录位置点
+    usage: "使用：'/rml 记录位置点'"
+  rel:
+    description: 恢复位置点
+    usage: "使用：'/rel 恢复位置点'"
+  debug:
+    description: 开启debug模式
+    usage: "/debug debug模式"
