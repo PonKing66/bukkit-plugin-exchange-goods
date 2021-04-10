@@ -7,8 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.ponking.bpeg.BukkitPluginExchangeGoods;
 
-import java.util.HashMap;
-
 /**
  * 记录点
  *

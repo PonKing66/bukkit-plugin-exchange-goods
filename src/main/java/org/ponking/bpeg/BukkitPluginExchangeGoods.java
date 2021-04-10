@@ -5,13 +5,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.ponking.bpeg.command.DebugCommand;
-import org.ponking.bpeg.command.ExchangeGoodsCommand;
-import org.ponking.bpeg.command.RememberLocationCommand;
-import org.ponking.bpeg.command.ReplyLocationCommand;
+import org.ponking.bpeg.command.*;
 import org.ponking.bpeg.listener.PlayerServerListener;
+import org.ponking.bpeg.model.Order;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author ponking
@@ -22,6 +22,9 @@ public final class BukkitPluginExchangeGoods extends JavaPlugin {
 
     private final HashMap<Player, Location> locationHashMap = new HashMap<>();
 
+
+    private final Set<Order> orders = new HashSet<>();
+
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -30,7 +33,6 @@ public final class BukkitPluginExchangeGoods extends JavaPlugin {
         registerEvent(getServer().getPluginManager());
         // Register our commands
         registerCommand();
-
 
         PluginDescriptionFile pdfFile = this.getDescription();
         getLogger().info(pdfFile.getName() + " version " + pdfFile.getVersion() + " 启动成功！");
@@ -49,7 +51,9 @@ public final class BukkitPluginExchangeGoods extends JavaPlugin {
     }
 
     public void registerCommand() {
-        getCommand("exGoods").setExecutor(new ExchangeGoodsCommand(this));
+        getCommand("giveGoods").setExecutor(new GiveGoodsCommand(this));
+        getCommand("exGoods").setExecutor(new ExChangeGoodsCommand(this));
+        getCommand("md").setExecutor(new MakeDealOrderCommand(this));
         getCommand("debug").setExecutor(new DebugCommand(this));
         getCommand("rml").setExecutor(new RememberLocationCommand(this));
         getCommand("rel").setExecutor(new ReplyLocationCommand(this));
@@ -77,11 +81,25 @@ public final class BukkitPluginExchangeGoods extends JavaPlugin {
     }
 
 
+    public void addOrder(Order order) {
+        orders.add(order);
+    }
+
+    @Deprecated
+    public void removeOrder(Order order) {
+        orders.remove(order);
+    }
+
+
     public HashMap<Player, Boolean> getPlayers() {
         return players;
     }
 
     public HashMap<Player, Location> getLocationHashMap() {
         return locationHashMap;
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
     }
 }

@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
  * @Author ponking
  * @Date 2021/4/9 18:12
  */
-public class ExchangeGoodsCommand implements CommandExecutor {
+public class GiveGoodsCommand implements CommandExecutor {
 
 
     private final BukkitPluginExchangeGoods plugin;
 
-    public ExchangeGoodsCommand(BukkitPluginExchangeGoods plugin) {
+    public GiveGoodsCommand(BukkitPluginExchangeGoods plugin) {
         this.plugin = plugin;
     }
 
@@ -88,14 +88,7 @@ public class ExchangeGoodsCommand implements CommandExecutor {
                 }
                 //操作玩家
                 HashMap<Integer, ? extends ItemStack> curAll = curPlayerInventory.all(material);
-                for (ItemStack value : curAll.values()) {
-                    if (count == 0) {
-                        break;
-                    }
-                    int preAmount = value.getAmount();
-                    value.setAmount(Math.max(preAmount - count, 0));
-                    count = preAmount - count >= 0 ? 0 : count - preAmount;
-                }
+                subMaterial(count, curAll);
                 // end
                 sendMessage(otherPlayer, "你收到" + curPlayer.getName() + "的" + Integer.parseInt(split[1]) + "个" + material);
                 return true;
@@ -104,6 +97,17 @@ public class ExchangeGoodsCommand implements CommandExecutor {
             }
         } else {
             return false;
+        }
+    }
+
+    static void subMaterial(int count, HashMap<Integer, ? extends ItemStack> curAll) {
+        for (ItemStack value : curAll.values()) {
+            if (count == 0) {
+                break;
+            }
+            int preAmount = value.getAmount();
+            value.setAmount(Math.max(preAmount - count, 0));
+            count = preAmount - count >= 0 ? 0 : count - preAmount;
         }
     }
 }

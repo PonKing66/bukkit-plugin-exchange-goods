@@ -8,9 +8,14 @@ loadbefore: [ Load-Exchange-Goods ]
 authors: [ PONKING ]
 description: Bukkit Plugin Exchange Goods
 commands:
-  exGoods:
+  giveGoods:
     description: 给予玩家方块
-#    usage: "使用: '/exGoods 方块名称 数量 玩家名称' 给予玩家方块"
+  #    usage: "使用: '/giveGoods 方块名称 数量 玩家名称' 给予玩家方块"
+  exGoods:
+    description: 与某玩家进行交易
+  #    usage: "使用: '/exGoods 交易方块名称 交易方块的数量 换取方块名称 换取方块队数量 需要交易玩家名称'"
+  md:
+    description: 确认交易
   rml:
     description: 记录位置点
     usage: "使用：'/rml 记录位置点'"
