@@ -60,13 +60,14 @@ public class MakeDealOrderCommand implements CommandExecutor {
                 // 判断当前玩家需要转移的方块数量是否合法
                 Player buyer = order.getBuyer();
                 Material sellerMaterial = order.getSellerMaterial();
+                Integer sellerCount = order.getSellerCount();
                 PlayerInventory curPlayerInventory = seller.getInventory();
                 if (sellerMaterial == null || !curPlayerInventory.contains(sellerMaterial)) {
                     sendMessage(seller, "不存在" + sellerMaterial + "方块");
                     sendMessage(buyer, "对方不存在" + sellerMaterial + "方块");
                     return false;
                 }
-                if (!curPlayerInventory.containsAtLeast(new ItemStack(sellerMaterial), Integer.parseInt(split[1]))) {
+                if (!curPlayerInventory.containsAtLeast(new ItemStack(sellerMaterial), sellerCount)) {
                     sendMessage(seller, "超出" + sellerMaterial + "方块数量");
                     sendMessage(buyer, "对方没有那么多" + sellerMaterial + "方块数量");
                     return false;
