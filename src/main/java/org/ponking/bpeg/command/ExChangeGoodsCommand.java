@@ -54,7 +54,7 @@ public class ExChangeGoodsCommand implements CommandExecutor {
                     sendMessage(curPlayer, "不存在" + buyerMaterial + "方块");
                     return false;
                 }
-                if (!curPlayerInventory.containsAtLeast(new ItemStack(buyerMaterial), Integer.parseInt(split[2]))) {
+                if (!curPlayerInventory.containsAtLeast(new ItemStack(buyerMaterial), Integer.parseInt(split[1]))) {
                     sendMessage(curPlayer, "超出" + buyerMaterial + "方块数量");
                     return false;
                 }
