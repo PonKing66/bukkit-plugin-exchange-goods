@@ -30,6 +30,7 @@ public class ExchangeGoodsCommand implements CommandExecutor {
         player.sendMessage(message);
     }
 
+
     /**
      * /exGoods  [方块名称] [数量] [玩家名字]
      *
@@ -64,6 +65,11 @@ public class ExchangeGoodsCommand implements CommandExecutor {
                     return false;
                 }
                 Player otherPlayer = otherPlayers.get(0);
+                // 判断当前玩家需要转移的被操作玩家是否合法
+                if(otherPlayer.equals(curPlayer)){
+                    sendMessage(curPlayer, "自己给自己，你给个寂寞！");
+                    return false;
+                }
                 PlayerInventory otherInventory = otherPlayer.getInventory();
                 // start 进行加减操作
                 int count = Integer.parseInt(split[1]);
