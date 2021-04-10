@@ -26,6 +26,10 @@ public class ExchangeGoodsCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
+    public void sendMessage(Player player, String message) {
+        player.sendMessage(message);
+    }
+
     /**
      * /exGoods  [方块名称] [数量] [玩家名字]
      *
@@ -44,60 +48,50 @@ public class ExchangeGoodsCommand implements CommandExecutor {
                 // 判断当前玩家需要转移的方块数量是否合法
                 PlayerInventory curPlayerInventory = curPlayer.getInventory();
                 Material material = Material.getMaterial(split[0]);
-                assert material != null;
-                if (!curPlayerInventory.contains(material)) {
-                    curPlayer.sendMessage("不存在" + material + "方块");
+                if (material == null || !curPlayerInventory.contains(material)) {
+                    sendMessage(curPlayer, "不存在" + material + "方块");
                     return false;
                 }
                 if (!curPlayerInventory.containsAtLeast(new ItemStack(material), Integer.parseInt(split[1]))) {
-                    curPlayer.sendMessage("超出" + material + "方块数量");
+                    sendMessage(curPlayer, "超出" + material + "方块数量");
                     return false;
                 }
                 // 获取被操作玩家
                 List<Player> otherPlayers = plugin.getPlayers().keySet().stream().
                         filter(item -> item.getName().equals(split[2])).collect(Collectors.toList());
                 if (otherPlayers.size() != 1) {
-                    curPlayer.sendMessage("不存在该玩家！");
+                    sendMessage(curPlayer, "不存在该玩家！");
+                    return false;
                 }
                 Player otherPlayer = otherPlayers.get(0);
                 PlayerInventory otherInventory = otherPlayer.getInventory();
-                // 进行加减操作
+                // start 进行加减操作
+                int count = Integer.parseInt(split[1]);
+                //被操作玩家
                 if (!otherInventory.contains(material)) {
-                    int count = Integer.parseInt(split[1]);
-                    //被操作玩家
                     otherInventory.addItem(new ItemStack(material, count));
-
-                    //操作玩家
-                    HashMap<Integer, ? extends ItemStack> curAll = curPlayerInventory.all(material);
-                    for (ItemStack value : curAll.values()) {
-                        if (count == 0) {
-                            break;
-                        }
-                        int preAmount = value.getAmount();
-                        value.setAmount(Math.max(preAmount - count, 0));
-                        count = preAmount - count >= 0 ? 0 : count - preAmount;
-                    }
                 } else {
                     HashMap<Integer, ? extends ItemStack> all = otherInventory.all(material);
                     int curMaterialIndex = 0;
-                    int count = Integer.parseInt(split[1]);
                     // 默认第一个
                     for (Integer index : all.keySet()) {
                         curMaterialIndex = index;
                         break;
                     }
                     all.get(curMaterialIndex).setAmount(all.get(curMaterialIndex).getAmount() + Integer.parseInt(split[1]));
-                    //操作玩家
-                    HashMap<Integer, ? extends ItemStack> curAll = curPlayerInventory.all(material);
-                    for (ItemStack value : curAll.values()) {
-                        if (count == 0) {
-                            break;
-                        }
-                        int preAmount = value.getAmount();
-                        value.setAmount(Math.max(preAmount - count, 0));
-                        count = preAmount - count >= 0 ? 0 : count - preAmount;
-                    }
                 }
+                //操作玩家
+                HashMap<Integer, ? extends ItemStack> curAll = curPlayerInventory.all(material);
+                for (ItemStack value : curAll.values()) {
+                    if (count == 0) {
+                        break;
+                    }
+                    int preAmount = value.getAmount();
+                    value.setAmount(Math.max(preAmount - count, 0));
+                    count = preAmount - count >= 0 ? 0 : count - preAmount;
+                }
+                // end
+                sendMessage(otherPlayer, "你收到" + curPlayer.getName() + "的" + Integer.parseInt(split[1]) + "个" + material);
                 return true;
             } else {
                 return false;
