@@ -66,7 +66,7 @@ public class GiveGoodsCommand implements CommandExecutor {
                 }
                 Player otherPlayer = otherPlayers.get(0);
                 // 判断当前玩家需要转移的被操作玩家是否合法
-                if(otherPlayer.equals(curPlayer)){
+                if (otherPlayer.equals(curPlayer)) {
                     sendMessage(curPlayer, "自己给自己，你给个寂寞！");
                     return false;
                 }
@@ -78,17 +78,27 @@ public class GiveGoodsCommand implements CommandExecutor {
                     otherInventory.addItem(new ItemStack(material, count));
                 } else {
                     HashMap<Integer, ? extends ItemStack> all = otherInventory.all(material);
-                    int curMaterialIndex = 0;
-                    // 默认第一个
-                    for (Integer index : all.keySet()) {
-                        curMaterialIndex = index;
+                    for (ItemStack itemStack : all.values()) {
+                        itemStack.setAmount(itemStack.getAmount() + count);
                         break;
                     }
-                    all.get(curMaterialIndex).setAmount(all.get(curMaterialIndex).getAmount() + Integer.parseInt(split[1]));
                 }
                 //操作玩家
                 HashMap<Integer, ? extends ItemStack> curAll = curPlayerInventory.all(material);
-                subMaterial(count, curAll);
+                for (ItemStack value : curAll.values()) {
+                    if (count == 0) {
+                        break;
+                    }
+                    int preAmount = value.getAmount();
+                    if (preAmount - count >= 0) {
+                        value.setAmount(preAmount - count);
+                        count = 0;
+                    } else {
+                        value.setAmount(0);
+                        count = count - preAmount;
+                    }
+                }
+
                 // end
                 sendMessage(otherPlayer, "你收到" + curPlayer.getName() + "的" + Integer.parseInt(split[1]) + "个" + material);
                 return true;
@@ -97,17 +107,6 @@ public class GiveGoodsCommand implements CommandExecutor {
             }
         } else {
             return false;
-        }
-    }
-
-    static void subMaterial(int count, HashMap<Integer, ? extends ItemStack> curAll) {
-        for (ItemStack value : curAll.values()) {
-            if (count == 0) {
-                break;
-            }
-            int preAmount = value.getAmount();
-            value.setAmount(Math.max(preAmount - count, 0));
-            count = preAmount - count >= 0 ? 0 : count - preAmount;
         }
     }
 }

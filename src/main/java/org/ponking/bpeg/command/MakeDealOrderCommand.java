@@ -73,6 +73,7 @@ public class MakeDealOrderCommand implements CommandExecutor {
                     return false;
                 }
                 exChangeMaterial(order);
+                this.plugin.getOrders().remove(order);
                 sendMessage(seller, "交易成功，请查收！");
                 sendMessage(buyer, "交易成功，请查收！");
                 return true;
@@ -84,33 +85,67 @@ public class MakeDealOrderCommand implements CommandExecutor {
         }
     }
 
+    /**
+     * 交换
+     *
+     * @param order
+     */
     public void exChangeMaterial(Order order) {
         Player buyer = order.getBuyer();
         Integer buyerCount = order.getBuyerCount();
         Material buyerMaterial = order.getBuyerMaterial();
+
         Player seller = order.getSeller();
         Integer sellerCount = order.getSellerCount();
         Material sellerMaterial = order.getSellerMaterial();
-        PlayerInventory sellerInventory = seller.getInventory();
-        // start 进行加减操作
-        int count = sellerCount;
-        // seller
-        if (!sellerInventory.contains(sellerMaterial)) {
-            sellerInventory.addItem(new ItemStack(sellerMaterial, count));
+
+        doExChangeMaterial(buyer, sellerMaterial, sellerCount,
+                seller, sellerMaterial, sellerCount);
+
+        doExChangeMaterial(seller, buyerMaterial, buyerCount,
+                buyer, buyerMaterial, buyerCount);
+    }
+
+    /**
+     * 交换核心方法
+     *
+     * @param p1
+     * @param m1
+     * @param c1
+     * @param p2
+     * @param m2
+     * @param c2
+     */
+    public void doExChangeMaterial(Player p1, Material m1, int c1,
+                                   Player p2, Material m2, int c2) {
+
+        // add
+        PlayerInventory sellerInventory = p1.getInventory();
+        if (!sellerInventory.contains(m1)) {
+            sellerInventory.addItem(new ItemStack(m1, c1));
         } else {
-            HashMap<Integer, ? extends ItemStack> all = sellerInventory.all(sellerMaterial);
-            int curMaterialIndex = 0;
-            // 默认第一个
-            for (Integer index : all.keySet()) {
-                curMaterialIndex = index;
+            HashMap<Integer, ? extends ItemStack> all = sellerInventory.all(m1);
+            for (ItemStack itemStack : all.values()) {
+                itemStack.setAmount(itemStack.getAmount() + c1);
                 break;
             }
-            all.get(curMaterialIndex).setAmount(all.get(curMaterialIndex).getAmount() + sellerCount);
         }
-        // buyer
-        PlayerInventory buyerInventory = buyer.getInventory();
-        HashMap<Integer, ? extends ItemStack> buyerAll = buyerInventory.all(buyerMaterial);
-        count = buyerCount;
-        GiveGoodsCommand.subMaterial(count, buyerAll);
+
+        // sub
+        PlayerInventory buyerInventory = p2.getInventory();
+        HashMap<Integer, ? extends ItemStack> buyerAll = buyerInventory.all(m2);
+        for (ItemStack value : buyerAll.values()) {
+            if (c2 == 0) {
+                break;
+            }
+            int preAmount = value.getAmount();
+            if (preAmount - c2 >= 0) {
+                c2 = 0;
+                value.setAmount(preAmount - c2);
+            } else {
+                c2 = c2 - preAmount;
+                value.setAmount(0);
+            }
+        }
     }
 }

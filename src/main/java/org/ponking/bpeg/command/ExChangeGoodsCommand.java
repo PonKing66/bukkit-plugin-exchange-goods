@@ -71,8 +71,8 @@ public class ExChangeGoodsCommand implements CommandExecutor {
                     sendMessage(curPlayer, "自己与自己交易，你交易个寂寞！");
                     return false;
                 }
-                Material sellerMaterial = Material.getMaterial(split[2]);
                 int buyerCount = Integer.parseInt(split[1]);
+                Material sellerMaterial = Material.getMaterial(split[2]);
                 int sellerCount = Integer.parseInt(split[3]);
                 Order order = new Order(curPlayer, otherPlayer, buyerMaterial, sellerMaterial,
                         buyerCount, sellerCount, LocalDateTime.now(), null);
@@ -80,7 +80,7 @@ public class ExChangeGoodsCommand implements CommandExecutor {
                 // end
                 sendMessage(curPlayer, "申请成功，等待回复！");
                 sendMessage(otherPlayer, "玩家"+curPlayer.getName()+"想用"+
-                        buyerCount+"个"+buyerMaterial+"换取你的"+sellerCount+sellerMaterial);
+                        buyerCount+"个"+buyerMaterial+"换取你的"+sellerCount+"个"+sellerMaterial);
                 return true;
             } else {
                 return false;

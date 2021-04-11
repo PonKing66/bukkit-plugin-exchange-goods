@@ -21,7 +21,7 @@ public class Order implements Serializable {
 
 
     /**
-     * 卖房
+     * 卖方
      */
     private Player seller;
 
